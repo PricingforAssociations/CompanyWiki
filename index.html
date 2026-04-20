@@ -1,0 +1,629 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Varela Round',system-ui,sans-serif;background:#f1eae2;color:#1f375b;display:flex;min-height:100vh;font-size:14px}
+.sidebar{width:232px;min-width:232px;background:#1f375b;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-logo{padding:16px 14px 12px;border-bottom:1px solid rgba(148,229,214,0.2)}
+.sidebar-logo .brand{font-size:12px;font-weight:700;color:#94e5d6;line-height:1.3}
+.sidebar-logo .sub{font-size:9px;color:rgba(255,255,255,0.45);margin-top:2px;text-transform:uppercase;letter-spacing:0.06em}
+.nav-section{padding:12px 12px 5px;font-size:9px;font-weight:700;color:rgba(148,229,214,0.55);text-transform:uppercase;letter-spacing:0.1em}
+.nav-item{display:flex;align-items:center;gap:7px;padding:6px 14px;font-size:11.5px;color:rgba(255,255,255,0.68);cursor:pointer;border-left:2px solid transparent;transition:all 0.13s}
+.nav-item:hover{color:#fff;background:rgba(148,229,214,0.1)}
+.nav-item.active{color:#efebbf;border-left-color:#94e5d6;background:rgba(148,229,214,0.12);font-weight:700}
+.nav-item.sub{padding-left:26px;font-size:11px}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:rgba(148,229,214,0.3);flex-shrink:0}
+.nav-item.active .nav-dot{background:#94e5d6}
+.main{flex:1;padding:32px 40px;overflow-y:auto;max-width:800px}
+.page{display:none}.page.active{display:block}
+.page-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#56787c;margin-bottom:5px}
+h1{font-size:22px;font-weight:700;color:#1f375b;margin-bottom:6px;line-height:1.25}
+.page-intro{font-size:13px;color:#56787c;line-height:1.6;margin-bottom:24px;max-width:560px}
+h2{font-size:14px;font-weight:700;margin:20px 0 8px;color:#1f375b;border-bottom:1px solid rgba(31,55,91,0.1);padding-bottom:5px}
+h3{font-size:12px;font-weight:700;margin:14px 0 5px;color:#1f375b}
+p{font-size:12px;color:#56787c;line-height:1.7;margin-bottom:8px}
+.card{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:10px;padding:14px 18px;margin-bottom:12px}
+.card-title{font-size:12px;font-weight:700;margin-bottom:4px;color:#1f375b}
+.card-body{font-size:11px;color:#56787c;line-height:1.6}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:#efebbf;border-radius:7px;padding:12px 14px}
+.stat-label{font-size:10px;color:#56787c;margin-bottom:3px}
+.stat-val{font-size:14px;font-weight:700;color:#1f375b}
+.badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-right:3px;margin-bottom:3px}
+.badge-navy{background:#1f375b;color:#efebbf}
+.badge-teal{background:#94e5d6;color:#0f4a40}
+.badge-gold{background:#efebbf;color:#1f375b}
+.badge-green{background:#d4edda;color:#155724}
+.badge-red{background:#f8d7da;color:#721c24}
+.divider{border:none;border-top:0.5px solid rgba(31,55,91,0.1);margin:20px 0}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px;margin-bottom:16px}
+.team-card{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all 0.13s}
+.team-card:hover{border-color:#94e5d6;transform:translateY(-1px)}
+.team-card.selected{border:2px solid #94e5d6;background:#f0fcfa}
+.avatar{width:34px;height:34px;border-radius:50%;background:#94e5d6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#1f375b;margin:0 auto 6px}
+.team-name{font-size:11px;font-weight:700;color:#1f375b;margin-bottom:2px}
+.team-role{font-size:9px;color:#56787c}
+.profile-box{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:10px;padding:16px 20px;margin-top:12px;display:none}
+.profile-box.visible{display:block}
+.profile-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.profile-av{width:44px;height:44px;border-radius:50%;background:#94e5d6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#1f375b;flex-shrink:0}
+.profile-name{font-size:14px;font-weight:700;color:#1f375b;margin-bottom:1px}
+.profile-title{font-size:10px;color:#56787c;margin-bottom:5px}
+.profile-meta{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:11px;margin-top:8px}
+.meta-label{color:#56787c;font-weight:700}
+.meta-val a{color:#0f6e56;text-decoration:none}
+.meta-val a:hover{text-decoration:underline}
+.step{display:flex;gap:12px;margin-bottom:13px}
+.step-num{width:22px;height:22px;border-radius:50%;background:#1f375b;color:#efebbf;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+.step-content{flex:1}
+.step-title{font-size:12px;font-weight:700;color:#1f375b;margin-bottom:2px}
+.step-desc{font-size:11px;color:#56787c;line-height:1.6}
+.timeline-phase{border-left:2px solid #94e5d6;padding-left:16px;margin-bottom:18px;position:relative}
+.timeline-phase::before{content:'';width:8px;height:8px;border-radius:50%;background:#94e5d6;position:absolute;left:-5px;top:3px}
+.phase-label{font-size:9px;font-weight:700;color:#56787c;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px}
+.phase-title{font-size:13px;font-weight:700;color:#1f375b;margin-bottom:4px}
+.phase-body{font-size:11px;color:#56787c;line-height:1.65}
+.value-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;padding:12px;background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:7px}
+ul.styled{padding-left:0;list-style:none;margin-bottom:14px}
+ul.styled li{font-size:11px;color:#56787c;line-height:1.65;padding:4px 0 4px 12px;position:relative;border-bottom:0.5px solid rgba(31,55,91,0.06)}
+ul.styled li::before{content:'—';position:absolute;left:0;color:#94e5d6;font-weight:700}
+ul.styled li:last-child{border-bottom:none}
+.info-box{background:#efebbf;border-left:3px solid #1f375b;border-radius:0 7px 7px 0;padding:10px 14px;margin:12px 0}
+.info-box p{margin:0;font-size:11px;color:#1f375b}
+.warn-box{background:#fff8e6;border-left:3px solid #854F0B;border-radius:0 7px 7px 0;padding:10px 14px;margin:12px 0}
+.warn-box p{margin:0;font-size:11px;color:#854F0B}
+table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:14px}
+th{text-align:left;padding:8px 10px;background:#1f375b;color:#efebbf;font-weight:700;font-size:10px}
+td{padding:8px 10px;border-bottom:0.5px solid rgba(31,55,91,0.07);color:#56787c;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even){background:rgba(148,229,214,0.05)}
+.search-bar{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(31,55,91,0.14);border-radius:7px;padding:8px 12px;margin-bottom:20px}
+.search-bar input{border:none;background:transparent;outline:none;font-size:12px;color:#1f375b;flex:1;font-family:inherit}
+.search-bar input::placeholder{color:#aaa}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:22px}
+.home-card{background:#fff;border:0.5px solid rgba(31,55,91,0.11);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.13s}
+.home-card:hover{border-color:#94e5d6;transform:translateY(-1px)}
+.home-card-icon{width:26px;height:26px;border-radius:6px;background:#94e5d6;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:12px;font-weight:700;color:#1f375b}
+.home-card-title{font-size:11px;font-weight:700;color:#1f375b;margin-bottom:2px}
+.home-card-desc{font-size:10px;color:#56787c}
+.dept-card{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:10px;padding:13px 16px;margin-bottom:10px}
+.dept-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:3px}
+.dept-name{font-size:13px;font-weight:700;color:#1f375b}
+.dept-owner{font-size:10px;color:#56787c}
+.dept-purpose{font-size:11px;color:#56787c;line-height:1.6;margin-bottom:6px}
+.dept-sops{font-size:10px;color:#56787c}
+.dept-sops strong{color:#1f375b}
+.color-swatch{display:inline-block;width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,0.1);margin-right:7px;vertical-align:middle}
+.tool-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid rgba(31,55,91,0.07)}
+.tool-row:last-child{border-bottom:none}
+.tool-num{width:20px;height:20px;border-radius:50%;background:#1f375b;color:#efebbf;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tool-name{font-size:11px;font-weight:700;color:#1f375b;min-width:110px}
+.tool-use{font-size:10px;color:#56787c}
+.policy-card{background:#fff;border-left:3px solid #94e5d6;border-radius:0 9px 9px 0;padding:12px 16px;margin-bottom:10px}
+.policy-title{font-size:12px;font-weight:700;color:#1f375b;margin-bottom:4px}
+.policy-body{font-size:11px;color:#56787c;line-height:1.6}
+.loom-link{display:inline-flex;align-items:center;gap:5px;background:#1f375b;color:#efebbf;padding:7px 12px;border-radius:7px;font-size:11px;font-weight:700;text-decoration:none;margin-top:6px}
+.ooo-box{background:#f0fcfa;border:1px solid #94e5d6;border-radius:9px;padding:12px 16px;margin-top:10px;font-size:11px;color:#1f375b;line-height:1.7}
+.tool-hero{display:flex;align-items:center;gap:14px;background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:20px;border:0.5px solid rgba(31,55,91,0.1)}
+.tool-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.tool-hero-name{font-size:16px;font-weight:700;color:#1f375b;margin-bottom:2px}
+.tool-hero-desc{font-size:11px;color:#56787c}
+.tool-section{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:10px;padding:13px 16px;margin-bottom:12px}
+.tool-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#56787c;margin-bottom:8px}
+.access-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid rgba(31,55,91,0.06);font-size:11px}
+.access-row:last-child{border-bottom:none}
+.access-label{color:#56787c;min-width:75px;font-weight:700}
+.access-val a{color:#0f6e56;text-decoration:none}
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.do-box{background:#f0fcfa;border:0.5px solid #94e5d6;border-radius:8px;padding:12px}
+.dont-box{background:#fff8e6;border:0.5px solid rgba(133,79,11,0.25);border-radius:8px;padding:12px}
+.do-box .label,.dont-box .label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.do-box .label{color:#0f6e56}
+.dont-box .label{color:#854F0B}
+.do-box ul,.dont-box ul{list-style:none;padding:0;margin:0}
+.do-box li,.dont-box li{font-size:11px;color:#1f375b;padding:2px 0 2px 11px;position:relative}
+.do-box li::before{content:'✓';position:absolute;left:0;color:#0f6e56;font-weight:700}
+.dont-box li::before{content:'✕';position:absolute;left:0;color:#854F0B;font-weight:700}
+.tools-index{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:20px}
+.tool-index-card{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:9px;padding:10px 12px;cursor:pointer;transition:all 0.13s;display:flex;align-items:center;gap:7px}
+.tool-index-card:hover{border-color:#94e5d6;transform:translateY(-1px)}
+.tool-index-icon{font-size:15px;flex-shrink:0}
+.tool-index-name{font-size:10px;font-weight:700;color:#1f375b}
+/* SOP cards */
+.sop-card{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.sop-info{flex:1}
+.sop-name{font-size:13px;font-weight:700;color:#1f375b;margin-bottom:3px}
+.sop-desc{font-size:11px;color:#56787c;line-height:1.5}
+.sop-owner{font-size:10px;color:#56787c;margin-top:4px}
+.sop-btn{display:inline-flex;align-items:center;gap:5px;background:#1f375b;color:#efebbf;padding:7px 12px;border-radius:7px;font-size:10px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0}
+.sop-btn:hover{background:#56787c}
+/* PTO tracker */
+.pto-table th{background:#1f375b;color:#efebbf}
+.pto-neg{color:#721c24;font-weight:700}
+.pto-ok{color:#155724}
+.pto-warn{color:#854F0B;font-weight:700}
+.pto-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.pto-link-btn{display:inline-flex;align-items:center;gap:5px;background:#94e5d6;color:#1f375b;padding:6px 12px;border-radius:7px;font-size:10px;font-weight:700;text-decoration:none}
+.quick-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:16px}
+.quick-link-card{background:#fff;border:0.5px solid rgba(31,55,91,0.1);border-radius:9px;padding:12px 14px;text-decoration:none;display:flex;align-items:center;gap:8px;transition:all 0.13s}
+.quick-link-card:hover{border-color:#94e5d6;transform:translateY(-1px)}
+.quick-link-icon{font-size:16px;flex-shrink:0}
+.quick-link-name{font-size:11px;font-weight:700;color:#1f375b;margin-bottom:1px}
+.quick-link-sub{font-size:10px;color:#56787c}
+</style>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">Pricing for Associations</div>
+    <div class="sub">Internal Team Wiki</div>
+  </div>
+  <div class="nav-section">Overview</div>
+  <div class="nav-item active" onclick="show('home',this)"><div class="nav-dot"></div>Home</div>
+  <div class="nav-item" onclick="show('mission',this)"><div class="nav-dot"></div>Mission, Vision & Values</div>
+  <div class="nav-item" onclick="show('storytelling',this)"><div class="nav-dot"></div>Our Story</div>
+  <div class="nav-section">The Team</div>
+  <div class="nav-item" onclick="show('team',this)"><div class="nav-dot"></div>Team Profiles</div>
+  <div class="nav-item" onclick="show('departments',this)"><div class="nav-dot"></div>Departments</div>
+  <div class="nav-section">Our Work</div>
+  <div class="nav-item" onclick="show('services',this)"><div class="nav-dot"></div>Services</div>
+  <div class="nav-item" onclick="show('framework',this)"><div class="nav-dot"></div>The PFA Framework</div>
+  <div class="nav-item" onclick="show('process',this)"><div class="nav-dot"></div>Client Process</div>
+  <div class="nav-item" onclick="show('deliverables',this)"><div class="nav-dot"></div>Deliverables</div>
+  <div class="nav-section">SOPs</div>
+  <div class="nav-item" onclick="show('sops',this)"><div class="nav-dot"></div>SOP Library</div>
+  <div class="nav-item sub" onclick="show('sop-email',this)"><div class="nav-dot"></div>Email SOP</div>
+  <div class="nav-item sub" onclick="show('sop-speaking',this)"><div class="nav-dot"></div>Speaking SOP</div>
+  <div class="nav-item sub" onclick="show('sop-consulting',this)"><div class="nav-dot"></div>Consulting SOP</div>
+  <div class="nav-item sub" onclick="show('sop-survey',this)"><div class="nav-dot"></div>Survey Creation SOP</div>
+  <div class="nav-item sub" onclick="show('sop-marketing',this)"><div class="nav-dot"></div>Marketing SOP</div>
+  <div class="nav-item sub" onclick="show('sop-dashboard',this)"><div class="nav-dot"></div>Dashboard / Visual Guide</div>
+  <div class="nav-section">HR & PTO</div>
+  <div class="nav-item" onclick="show('pto',this)"><div class="nav-dot"></div>PTO Overview & Policy</div>
+  <div class="nav-item" onclick="show('pto-tracker',this)"><div class="nav-dot"></div>PTO Tracker 2026</div>
+  <div class="nav-item" onclick="show('payroll',this)"><div class="nav-dot"></div>Payroll</div>
+  <div class="nav-section">Brand Assets</div>
+  <div class="nav-item" onclick="show('brand',this)"><div class="nav-dot"></div>Brand Kit</div>
+  <div class="nav-item" onclick="show('email-sig',this)"><div class="nav-dot"></div>Email Signature & OOO</div>
+  <div class="nav-item" onclick="show('decks',this)"><div class="nav-dot"></div>Decks & Templates</div>
+  <div class="nav-section">Tools</div>
+  <div class="nav-item" onclick="show('tools-index',this)"><div class="nav-dot"></div>Tools Overview</div>
+  <div class="nav-item sub" onclick="show('tool-clickup',this)"><div class="nav-dot"></div>📝 ClickUp</div>
+  <div class="nav-item sub" onclick="show('tool-squarespace',this)"><div class="nav-dot"></div>🌐 Squarespace</div>
+  <div class="nav-item sub" onclick="show('tool-flodesk',this)"><div class="nav-dot"></div>✉️ FloDesk</div>
+  <div class="nav-item sub" onclick="show('tool-zoom',this)"><div class="nav-dot"></div>🎥 Zoom</div>
+  <div class="nav-item sub" onclick="show('tool-linkedin',this)"><div class="nav-dot"></div>💼 LinkedIn</div>
+  <div class="nav-item sub" onclick="show('tool-otter',this)"><div class="nav-dot"></div>📝 Otter</div>
+  <div class="nav-item sub" onclick="show('tool-surveymonkey',this)"><div class="nav-dot"></div>📊 SurveyMonkey</div>
+  <div class="nav-item sub" onclick="show('tool-canva',this)"><div class="nav-dot"></div>🎨 Canva</div>
+  <div class="nav-item sub" onclick="show('tool-email',this)"><div class="nav-dot"></div>📧 Company Email</div>
+  <div class="nav-item sub" onclick="show('tool-honeybook',this)"><div class="nav-dot"></div>📒 HoneyBook</div>
+  <div class="nav-item sub" onclick="show('tool-chatgpt',this)"><div class="nav-dot"></div>🤖 ChatGPT</div>
+  <div class="nav-item sub" onclick="show('tool-claude',this)"><div class="nav-dot"></div>🤖 Claude</div>
+  <div class="nav-item sub" onclick="show('tool-conjointly',this)"><div class="nav-dot"></div>📊 Conjointly</div>
+  <div class="nav-item sub" onclick="show('tool-notion',this)"><div class="nav-dot"></div>📒 Notion</div>
+  <div class="nav-section">Operations</div>
+  <div class="nav-item" onclick="show('policies',this)"><div class="nav-dot"></div>Company Policies</div>
+  <div class="nav-item" onclick="show('benefits',this)"><div class="nav-dot"></div>Benefits & Perks</div>
+  <div class="nav-item" onclick="show('onboarding',this)"><div class="nav-dot"></div>New Employee Onboarding</div>
+  <div class="nav-item" onclick="show('faqs',this)"><div class="nav-dot"></div>FAQs</div>
+</nav>
+
+<main class="main">
+
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="page-tag">Welcome</div>
+  <h1>PFA Internal Wiki</h1>
+  <p class="page-intro">Your single source of truth for everything Pricing for Associations. Start here. Come back often. Keep it updated.</p>
+  <div class="search-bar"><span style="font-size:12px;color:#aaa">&#128269;</span><input type="text" placeholder="Search the wiki..." oninput="handleSearch(this.value)"></div>
+  <h2>Quick navigation</h2>
+  <div class="home-grid">
+    <div class="home-card" onclick="show('mission',qn('mission'))"><div class="home-card-icon">M</div><div class="home-card-title">Mission & Values</div><div class="home-card-desc">Why we exist</div></div>
+    <div class="home-card" onclick="show('team',qn('team'))"><div class="home-card-icon">T</div><div class="home-card-title">Team Profiles</div><div class="home-card-desc">Bios, emails, links</div></div>
+    <div class="home-card" onclick="show('sops',qn('sops'))"><div class="home-card-icon">S</div><div class="home-card-title">SOP Library</div><div class="home-card-desc">6 SOPs linked</div></div>
+    <div class="home-card" onclick="show('pto',qn('pto'))"><div class="home-card-icon">H</div><div class="home-card-title">HR & PTO</div><div class="home-card-desc">Balances & policy</div></div>
+    <div class="home-card" onclick="show('framework',qn('framework'))"><div class="home-card-icon">F</div><div class="home-card-title">PFA Framework</div><div class="home-card-desc">3-phase approach</div></div>
+    <div class="home-card" onclick="show('tools-index',qn('tools-index'))"><div class="home-card-icon">&#9881;</div><div class="home-card-title">Tools</div><div class="home-card-desc">14 tools documented</div></div>
+    <div class="home-card" onclick="show('policies',qn('policies'))"><div class="home-card-icon">P</div><div class="home-card-title">Policies</div><div class="home-card-desc">Hours, leave, conduct</div></div>
+    <div class="home-card" onclick="show('onboarding',qn('onboarding'))"><div class="home-card-icon">&#10003;</div><div class="home-card-title">Onboarding</div><div class="home-card-desc">New hire guide</div></div>
+  </div>
+  <div class="divider"></div>
+  <h2>Quick links</h2>
+  <div class="quick-links">
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/fm/27tv4-29637" target="_blank"><div class="quick-link-icon">📋</div><div><div class="quick-link-name">PTO Request Form</div><div class="quick-link-sub">ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://docs.google.com/spreadsheets/d/1ClztXYlFWUF96-YILD4e1YLhMqTHjPQifDpoHNGRd-Y/edit?gid=2139394804#gid=2139394804" target="_blank"><div class="quick-link-icon">📊</div><div><div class="quick-link-name">PTO Report</div><div class="quick-link-sub">Google Sheets</div></div></a>
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/f/90172031798/90170969917" target="_blank"><div class="quick-link-icon">💰</div><div><div class="quick-link-name">Weekly Payroll</div><div class="quick-link-sub">ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://app.clickup.com/2352996" target="_blank"><div class="quick-link-icon">📝</div><div><div class="quick-link-name">ClickUp Workspace</div><div class="quick-link-sub">Task management</div></div></a>
+    <a class="quick-link-card" href="https://www.notion.so" target="_blank"><div class="quick-link-icon">📒</div><div><div class="quick-link-name">Notion Workspace</div><div class="quick-link-sub">SOPs & wiki</div></div></a>
+    <a class="quick-link-card" href="https://www.pricingforassociations.com" target="_blank"><div class="quick-link-icon">🌐</div><div><div class="quick-link-name">PFA Website</div><div class="quick-link-sub">Squarespace</div></div></a>
+  </div>
+  <div class="grid-2">
+    <div class="stat-card"><div class="stat-label">Founded</div><div class="stat-val">October 2020</div></div>
+    <div class="stat-card"><div class="stat-label">Legal entity</div><div class="stat-val" style="font-size:11px">The Michael Tatonetti Team, LLC</div></div>
+    <div class="stat-card"><div class="stat-label">DBA</div><div class="stat-val" style="font-size:12px">Pricing for Associations</div></div>
+    <div class="stat-card"><div class="stat-label">Team size</div><div class="stat-val">11 people</div></div>
+  </div>
+  <div class="info-box"><p>Internal use only. Do not share outside the team. Something out of date? Flag it to Meldee.</p></div>
+</div>
+
+<!-- MISSION -->
+<div id="mission" class="page">
+  <div class="page-tag">Overview</div><h1>Mission, Vision & Values</h1>
+  <p class="page-intro">Everything traces back to one conviction: when associations price right, they fulfill their mission for years to come.</p>
+  <h2>Mission</h2>
+  <div class="card" style="border-left:3px solid #94e5d6"><div class="card-body" style="font-size:13px;color:#1f375b;font-style:italic">"We empower associations with strategic pricing expertise that enhances financial sustainability, strengthens member engagement, and maximizes the value they deliver to their stakeholders."</div></div>
+  <h2>Vision</h2>
+  <div class="card"><div class="card-body">To be the leading authority on pricing strategy for associations, transforming how membership organizations structure and communicate value.</div></div>
+  <h2>Unique value proposition</h2>
+  <p>We are the only firm in the world with staff holding both the <strong>CAE</strong> and <strong>CPP</strong> credentials.</p>
+  <h2>Core values</h2>
+  <div class="value-row"><div style="width:24px;height:24px;border-radius:5px;background:#1f375b;color:#efebbf;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">01</div><div><div class="card-title">Innovation</div><div class="card-body">We push boundaries and uncover fresh strategies.</div></div></div>
+  <div class="value-row"><div style="width:24px;height:24px;border-radius:5px;background:#1f375b;color:#efebbf;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">02</div><div><div class="card-title">Collaboration</div><div class="card-body">Every contribution is valued. Together, associations not only survive — they thrive.</div></div></div>
+  <div class="value-row"><div style="width:24px;height:24px;border-radius:5px;background:#1f375b;color:#efebbf;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">03</div><div><div class="card-title">Community</div><div class="card-body">An equitable table where everyone can sit.</div></div></div>
+  <div class="value-row"><div style="width:24px;height:24px;border-radius:5px;background:#1f375b;color:#efebbf;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">04</div><div><div class="card-title">Mission fulfillment</div><div class="card-body">Our mission is to help you sustain yours.</div></div></div>
+  <div class="value-row"><div style="width:24px;height:24px;border-radius:5px;background:#1f375b;color:#efebbf;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">05</div><div><div class="card-title">Financial stability</div><div class="card-body">Pricing is the bridge between impact and sustainability.</div></div></div>
+</div>
+
+<!-- STORYTELLING -->
+<div id="storytelling" class="page">
+  <div class="page-tag">Overview</div><h1>Our Story</h1>
+  <p class="page-intro">Where we came from and the problem we exist to solve.</p>
+  <div class="card" style="border-left:3px solid #94e5d6"><div class="card-body" style="font-size:12px;color:#1f375b;font-style:italic">"Associations come to us when they are tired of pulling prices out of thin air."</div></div>
+  <h2>About PFA</h2>
+  <p>Founded October 2020, PFA is a specialized consulting firm helping professional associations, trade groups, and membership organizations develop effective pricing strategies. Our CAE + CPP credentials make us the only firm of our kind in the world.</p>
+  <h2>Dr. Michael's introduction</h2>
+  <a class="loom-link" href="https://www.loom.com/share/ca2fc1f72f25416db06a0bea5b7a8c8e" target="_blank">&#9654; Watch on Loom</a>
+  <a class="loom-link" style="background:#56787c;margin-left:8px" href="https://drive.google.com/file/d/1VPVUSQdeefmOKrrfNz3MOEsRR60qcHjf/view" target="_blank">&#128196; Storytelling library</a>
+</div>
+
+<!-- TEAM -->
+<div id="team" class="page">
+  <div class="page-tag">The Team</div><h1>Team Profiles</h1>
+  <p class="page-intro">Click any team member to expand their full profile.</p>
+  <div class="team-grid">
+    <div class="team-card" id="tc-michael" onclick="toggleProfile('michael','tc-michael')"><div class="avatar">MT</div><div class="team-name">Dr. Michael Tatonetti</div><div class="team-role">CEO & Founder</div></div>
+    <div class="team-card" id="tc-meldee" onclick="toggleProfile('meldee','tc-meldee')"><div class="avatar" style="background:#1f375b;color:#efebbf">MR</div><div class="team-name">Meldee Reynacido</div><div class="team-role">Director of Operations</div></div>
+    <div class="team-card" id="tc-rolan" onclick="toggleProfile('rolan','tc-rolan')"><div class="avatar" style="background:#efebbf;color:#1f375b">RR</div><div class="team-name">Rolan Reynacido</div><div class="team-role">Director of Pricing Analytics</div></div>
+    <div class="team-card" id="tc-rachelle" onclick="toggleProfile('rachelle','tc-rachelle')"><div class="avatar" style="background:#94e5d6">RC</div><div class="team-name">Rachelle Cenina</div><div class="team-role">Client Delivery Manager</div></div>
+    <div class="team-card" id="tc-jerick" onclick="toggleProfile('jerick','tc-jerick')"><div class="avatar" style="background:#56787c;color:#fff">JM</div><div class="team-name">Jean Patrick Marquez</div><div class="team-role">Sr. Pricing Analyst</div></div>
+    <div class="team-card" id="tc-jicelle" onclick="toggleProfile('jicelle','tc-jicelle')"><div class="avatar" style="background:#1f375b;color:#94e5d6">JB</div><div class="team-name">Jicelle Bueno</div><div class="team-role">Marketing Manager</div></div>
+    <div class="team-card" id="tc-christen" onclick="toggleProfile('christen','tc-christen')"><div class="avatar" style="background:#efebbf;color:#1f375b">CP</div><div class="team-name">Christen Pruitt</div><div class="team-role">Business Development Manager</div></div>
+    <div class="team-card" id="tc-michelle" onclick="toggleProfile('michelle','tc-michelle')"><div class="avatar" style="background:#94e5d6;color:#0f4a40">MB</div><div class="team-name">Michelle Brien</div><div class="team-role">Consultant</div></div>
+    <div class="team-card" id="tc-rita" onclick="toggleProfile('rita','tc-rita')"><div class="avatar" style="background:#56787c;color:#fff">RiR</div><div class="team-name">Rita Reynacido</div><div class="team-role">Jr. Pricing Analyst</div></div>
+    <div class="team-card" id="tc-ben" onclick="toggleProfile('ben','tc-ben')"><div class="avatar" style="background:#1f375b;color:#efebbf">BP</div><div class="team-name">Benjamin Paterno</div><div class="team-role">Jr. Pricing Analyst</div></div>
+    <div class="team-card" id="tc-chiarra" onclick="toggleProfile('chiarra','tc-chiarra')"><div class="avatar" style="background:#efebbf;color:#1f375b">CE</div><div class="team-name">Chiarra Marie Eva</div><div class="team-role">Jr. Pricing Analyst</div></div>
+  </div>
+  <div id="profile-michael" class="profile-box"><div class="profile-header"><div class="profile-av">MT</div><div><div class="profile-name">Dr. Michael Tatonetti, CPP, CAE</div><div class="profile-title">CEO & Founder</div><div><span class="badge badge-navy">CPP</span><span class="badge badge-navy">CAE</span><span class="badge badge-teal">Founder</span></div></div></div><p style="font-size:11px">Visionary leader, 20+ years in associations and nonprofits. Proud father of five and annual Nutcracker performer.</p><div class="profile-meta"><span class="meta-label">Birthday</span><span class="meta-val">June 4, 1986</span><span class="meta-label">Started</span><span class="meta-val">October 1, 2020</span><span class="meta-label">Email</span><span class="meta-val"><a href="mailto:doc@pricingforassociations.com">doc@pricingforassociations.com</a></span><span class="meta-label">LinkedIn</span><span class="meta-val"><a href="https://www.linkedin.com/in/drtatonetti" target="_blank">linkedin.com/in/drtatonetti</a></span><span class="meta-label">ClickUp</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/l/4-4420672-1" target="_blank">View section</a></span></div></div>
+  <div id="profile-meldee" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#1f375b;color:#efebbf">MR</div><div><div class="profile-name">Meldee Reynacido, CPAE</div><div class="profile-title">Director of Operations</div></div></div><p style="font-size:11px">Dynamic operations leader. Sharp instincts, calm under pressure, known for optimizing workflows and bringing clarity to chaos.</p><div class="profile-meta"><span class="meta-label">Birthday</span><span class="meta-val">September 14, 1988</span><span class="meta-label">Started</span><span class="meta-val">February 11, 2021</span><span class="meta-label">Email</span><span class="meta-val"><a href="mailto:meldee@pricingforassociations.com">meldee@pricingforassociations.com</a></span><span class="meta-label">LinkedIn</span><span class="meta-val"><a href="https://linkedin.com/in/dee-reynacido-cpae-b57304bb" target="_blank">View profile</a></span><span class="meta-label">ClickUp</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/db/27tv4-17177" target="_blank">View section</a></span><span class="meta-label">Payroll</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/dc/27tv4-16317" target="_blank">View records</a></span></div></div>
+  <div id="profile-rolan" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#efebbf;color:#1f375b">RR</div><div><div class="profile-name">Rolan Reynacido, CPAE</div><div class="profile-title">Director of Pricing Analytics</div></div></div><p style="font-size:11px">Detail-oriented leader who ensures every client receives exceptional value. Combines sharp critical thinking with a collaborative spirit.</p><div class="profile-meta"><span class="meta-label">Birthday</span><span class="meta-val">November 30, 1986</span><span class="meta-label">Started</span><span class="meta-val">March 11, 2024</span><span class="meta-label">Email</span><span class="meta-val"><a href="mailto:rolan@pricingforassociations.com">rolan@pricingforassociations.com</a></span><span class="meta-label">LinkedIn</span><span class="meta-val"><a href="https://linkedin.com/in/rolanreynacido" target="_blank">View profile</a></span><span class="meta-label">ClickUp</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/s/49130375" target="_blank">View section</a></span><span class="meta-label">Payroll</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/dc/27tv4-16337" target="_blank">View records</a></span></div></div>
+  <div id="profile-rachelle" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#94e5d6;color:#1f375b">RC</div><div><div class="profile-name">Rachelle Cenina, CPAE</div><div class="profile-title">Client Delivery Manager</div></div></div><p style="font-size:11px">Creative and detail-obsessed. Builds dashboards, manages client delivery. Visual storyteller who makes data and PFA shine.</p><div class="profile-meta"><span class="meta-label">Birthday</span><span class="meta-val">October 5, 1989</span><span class="meta-label">Started</span><span class="meta-val">June 17, 2024</span><span class="meta-label">Email</span><span class="meta-val"><a href="mailto:rachelle@pricingforassociations.com">rachelle@pricingforassociations.com</a></span><span class="meta-label">LinkedIn</span><span class="meta-val"><a href="https://linkedin.com/in/rachelle-cenina-cpae-291153338" target="_blank">View profile</a></span><span class="meta-label">Payroll</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/dc/27tv4-16377" target="_blank">View records</a></span></div></div>
+  <div id="profile-jerick" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#56787c;color:#fff">JM</div><div><div class="profile-name">Jean Patrick Marquez, CPAE</div><div class="profile-title">Sr. Pricing Analyst</div></div></div><p style="font-size:11px">Sharp, reliable analyst who transforms data into clarity. Calm focus and future-minded approach to every engagement.</p><div class="profile-meta"><span class="meta-label">Birthday</span><span class="meta-val">April 14, 1988</span><span class="meta-label">Started</span><span class="meta-val">January 16, 2025</span><span class="meta-label">Email</span><span class="meta-val"><a href="mailto:jerick@pricingforassociations.com">jerick@pricingforassociations.com</a></span><span class="meta-label">Payroll</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/dc/27tv4-25097" target="_blank">View records</a></span></div></div>
+  <div id="profile-jicelle" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#1f375b;color:#94e5d6">JB</div><div><div class="profile-name">Jicelle Bueno, CPAE</div><div class="profile-title">Marketing Manager</div></div></div><p style="font-size:11px">Self-sufficient and imaginative marketer. Fast turnarounds, compelling storytelling, strong brand instincts.</p><div class="profile-meta"><span class="meta-label">Birthday</span><span class="meta-val">July 4, 1999</span><span class="meta-label">Started</span><span class="meta-val">January 13, 2025</span><span class="meta-label">Email</span><span class="meta-val"><a href="mailto:jicelle@pricingforassociations.com">jicelle@pricingforassociations.com</a></span><span class="meta-label">Payroll</span><span class="meta-val"><a href="https://app.clickup.com/2352996/v/dc/27tv4-25077" target="_blank">View records</a></span></div></div>
+  <div id="profile-christen" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#efebbf;color:#1f375b">CP</div><div><div class="profile-name">Christen Pruitt</div><div class="profile-title">Business Development Manager</div></div></div><p style="font-size:11px">Leads prospecting, discovery calls, and proposals. First point of contact for new leads.</p></div>
+  <div id="profile-michelle" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#94e5d6;color:#0f4a40">MB</div><div><div class="profile-name">Michelle Brien</div><div class="profile-title">Consultant</div></div></div><p style="font-size:11px">Supports client delivery, research, and strategic recommendations across engagements.</p></div>
+  <div id="profile-rita" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#56787c;color:#fff">RiR</div><div><div class="profile-name">Rita Reynacido</div><div class="profile-title">Jr. Pricing Analyst</div></div></div><p style="font-size:11px">Data collection, survey administration, and analysis support.</p></div>
+  <div id="profile-ben" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#1f375b;color:#efebbf">BP</div><div><div class="profile-name">Benjamin Paterno</div><div class="profile-title">Jr. Pricing Analyst</div></div></div><p style="font-size:11px">Data collection, survey administration, and analysis support.</p></div>
+  <div id="profile-chiarra" class="profile-box"><div class="profile-header"><div class="profile-av" style="background:#efebbf;color:#1f375b">CE</div><div><div class="profile-name">Chiarra Marie Eva</div><div class="profile-title">Jr. Pricing Analyst</div></div></div><p style="font-size:11px">Data collection, survey administration, and analysis support.</p></div>
+</div>
+
+<!-- DEPARTMENTS -->
+<div id="departments" class="page">
+  <div class="page-tag">The Team</div><h1>Departments</h1>
+  <p class="page-intro">Seven departments, each with a clear purpose and owner.</p>
+  <div class="dept-card"><div class="dept-head"><div class="dept-name">CEO</div><div class="dept-owner">Dr. Michael Tatonetti</div></div><div class="dept-purpose">Sets vision, strategic direction, and priorities. Ensures sustainable growth and long-term impact.</div></div>
+  <div class="dept-card"><div class="dept-head"><div class="dept-name">Operations</div><div class="dept-owner">Meldee Reynacido</div></div><div class="dept-purpose">Designs and maintains systems so work gets done consistently without relying on tribal knowledge.</div><div class="dept-sops"><strong>SOPs:</strong> Internal workflows, QA checks, capacity planning, internal handoffs.</div></div>
+  <div class="dept-card"><div class="dept-head"><div class="dept-name">Pricing Analytics</div><div class="dept-owner">Rolan Reynacido</div></div><div class="dept-purpose">Oversees all data and analytics work. Manages the analyst team and data quality.</div><div class="dept-sops"><strong>Team:</strong> Jean Patrick (Sr.), Rita, Benjamin, Chiarra (Jr.).</div></div>
+  <div class="dept-card"><div class="dept-head"><div class="dept-name">Client Delivery</div><div class="dept-owner">Rachelle Cenina</div></div><div class="dept-purpose">Manages client relationships and project timelines. Bridges client needs and internal execution.</div></div>
+  <div class="dept-card"><div class="dept-head"><div class="dept-name">Marketing</div><div class="dept-owner">Jicelle Bueno</div></div><div class="dept-purpose">Communicates PFA's value consistently, building trust, visibility, and demand.</div></div>
+  <div class="dept-card"><div class="dept-head"><div class="dept-name">Sales</div><div class="dept-owner">Christen Pruitt</div></div><div class="dept-purpose">Converts interest into revenue through a clear, value-driven process.</div></div>
+  <div class="dept-card"><div class="dept-head"><div class="dept-name">HR</div><div class="dept-owner">Meldee Reynacido</div></div><div class="dept-purpose">Supports, develops, and retains people while fostering a values-aligned workplace.</div></div>
+</div>
+
+<!-- SERVICES / FRAMEWORK / PROCESS / DELIVERABLES (condensed) -->
+<div id="services" class="page"><div class="page-tag">Our Work</div><h1>Services</h1><p class="page-intro">Two service lines. One specialty.</p><div class="card" style="border-left:3px solid #94e5d6"><div class="card-title" style="font-size:14px">Pricing Consulting</div><div class="card-body">Full engagement, 6–10 months, three-phase framework. Delivers a Pricing and Value Roadmap and governance document.</div></div><div class="card" style="margin-top:10px"><div class="card-title" style="font-size:14px">Speaking & Training</div><div class="card-body">Dr. Michael speaks at conferences and retreats on pricing strategy, value, and financial sustainability.</div></div><div class="info-box"><p>Pricing is all we do. We do not do general consulting.</p></div></div>
+<div id="framework" class="page"><div class="page-tag">Our Work</div><h1>The PFA Framework</h1><p class="page-intro">Three phases. Every engagement. Never skip a phase without Dr. Michael's sign-off.</p><div class="timeline-phase"><div class="phase-label">Phase 1 — 1 to 2 months</div><div class="phase-title">Data Analysis</div><div class="phase-body">Collect and analyze performance trends and audience insights. Kick-off call + two-hour data review. Report delivered.</div><div style="margin-top:7px"><span class="badge badge-teal">Performance trends</span><span class="badge badge-teal">Audience insights</span><span class="badge badge-teal">Value gaps</span></div></div><div class="timeline-phase"><div class="phase-label">Phase 2 — 3 to 5 months</div><div class="phase-title">Value Analysis</div><div class="phase-body">Listening tours, surveys, and focus groups uncover what members truly value.</div><div style="margin-top:7px"><span class="badge badge-navy">Listening tours</span><span class="badge badge-navy">Surveys</span><span class="badge badge-navy">Focus groups</span></div></div><div class="timeline-phase"><div class="phase-label">Phase 3 — 2 to 3 months</div><div class="phase-title">Pricing Analysis</div><div class="phase-body">Pricing and Value Roadmap created and presented in a three-hour intensive. Governance document delivered.</div><div style="margin-top:7px"><span class="badge badge-gold">Recommendations</span><span class="badge badge-gold">Bundles</span><span class="badge badge-gold">Roadmap</span></div></div></div>
+<div id="process" class="page"><div class="page-tag">Our Work</div><h1>Client Process</h1><p class="page-intro">From first contact to final deliverable.</p><div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Discovery call</div><div class="step-desc">Christen leads. Dr. Michael joins when appropriate.</div></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Proposal & contract</div><div class="step-desc">Custom proposal in HoneyBook. Countersigned before work begins.</div></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Kick-off call</div><div class="step-desc">One hour. Rachelle coordinates. Data needs confirmed.</div></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Phase 1 — Data Analysis</div><div class="step-desc">Analysts collect data under Rolan's oversight. Two-hour review. Report delivered.</div></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Phase 2 — Value Analysis</div><div class="step-desc">Surveys via Conjointly/SurveyMonkey. Jean Patrick and Jr. Analysts support.</div></div></div><div class="step"><div class="step-num">6</div><div class="step-content"><div class="step-title">Phase 3 — Pricing Analysis</div><div class="step-desc">Roadmap built internally, reviewed before delivery.</div></div></div><div class="step"><div class="step-num">7</div><div class="step-content"><div class="step-title">Roadmap intensive</div><div class="step-desc">Three-hour presentation. Dr. Michael leads. Governance document delivered.</div></div></div><div class="step"><div class="step-num">8</div><div class="step-content"><div class="step-title">Close & offboarding</div><div class="step-desc">Final files delivered. Feedback collected. Case study opportunity assessed.</div></div></div></div>
+<div id="deliverables" class="page"><div class="page-tag">Our Work</div><h1>Deliverables</h1><p class="page-intro">What every client receives.</p><div class="card"><div class="card-title">Data Analysis Report</div><div style="font-size:9px;color:#56787c;font-weight:700;margin-bottom:5px;text-transform:uppercase">Phase 1</div><div class="card-body">Performance trends, audience data, historical pricing, value gaps.</div></div><div class="card" style="margin-top:8px"><div class="card-title">Value Analysis Findings</div><div style="font-size:9px;color:#56787c;font-weight:700;margin-bottom:5px;text-transform:uppercase">Phase 2</div><div class="card-body">Insights from listening tours, surveys, and focus groups.</div></div><div class="card" style="margin-top:8px;border-left:3px solid #94e5d6"><div class="card-title">Pricing and Value Roadmap</div><div style="font-size:9px;color:#56787c;font-weight:700;margin-bottom:5px;text-transform:uppercase">Phase 3 — Primary Deliverable</div><div class="card-body">Pricing recommendations, bundles, value adds, marketing funnel guidance, and annual pricing review plan.</div></div><div class="card" style="margin-top:8px"><div class="card-title">Governance Document</div><div style="font-size:9px;color:#56787c;font-weight:700;margin-bottom:5px;text-transform:uppercase">Phase 3 — Supplemental</div><div class="card-body">Equips the client team to maintain momentum after engagement ends.</div></div></div>
+
+<!-- ============ SOPs ============ -->
+<div id="sops" class="page">
+  <div class="page-tag">SOPs</div>
+  <h1>SOP Library</h1>
+  <p class="page-intro">Six standard operating procedures. Each links directly to the full document in Notion. These are your playbooks — consult them before starting any major task.</p>
+
+  <div class="sop-card">
+    <div class="sop-info">
+      <div class="sop-name">📧 Email Template SOP</div>
+      <div class="sop-desc">Templates and standards for all outgoing PFA emails — client communication, follow-ups, and internal correspondence.</div>
+      <div class="sop-owner">Owner: Jicelle Bueno (Marketing Manager)</div>
+    </div>
+    <a class="sop-btn" href="https://www.notion.so/Email-Template-SOP-1ce58090ef4280bab715c9827f0aace5" target="_blank">Open in Notion ↗</a>
+  </div>
+
+  <div class="sop-card">
+    <div class="sop-info">
+      <div class="sop-name">🎤 Speaking Engagements SOP</div>
+      <div class="sop-desc">Standard operating procedures for both virtual and in-person speaking engagements — from booking to post-event follow-up.</div>
+      <div class="sop-owner">Owner: Dr. Michael Tatonetti / Christen Pruitt</div>
+    </div>
+    <a class="sop-btn" href="https://www.notion.so/Speaking-Engagements-Virtual-In-Person-Standard-Operating-Procedures-30d58090ef428063b23dc7e6bc68a52c" target="_blank">Open in Notion ↗</a>
+  </div>
+
+  <div class="sop-card">
+    <div class="sop-info">
+      <div class="sop-name">📋 Consulting Roadmap SOP</div>
+      <div class="sop-desc">The full consulting process from kick-off to roadmap delivery. The definitive guide for every engagement the team runs.</div>
+      <div class="sop-owner">Owner: Rolan Reynacido / Rachelle Cenina</div>
+    </div>
+    <a class="sop-btn" href="https://www.notion.so/Consulting-Roadmap-SOP-2f558090ef428082babaed90af003f6c" target="_blank">Open in Notion ↗</a>
+  </div>
+
+  <div class="sop-card">
+    <div class="sop-info">
+      <div class="sop-name">📊 Survey Creation SOP</div>
+      <div class="sop-desc">How to design, build, and deploy surveys using SurveyMonkey and Conjointly. Covers question logic, testing, and data export.</div>
+      <div class="sop-owner">Owner: Rolan Reynacido (Director of Pricing Analytics)</div>
+    </div>
+    <a class="sop-btn" href="https://www.notion.so/Survey-Creation-SOP-30758090ef42803aa8a1cb1907af7d7b" target="_blank">Open in Notion ↗</a>
+  </div>
+
+  <div class="sop-card">
+    <div class="sop-info">
+      <div class="sop-name">📣 Marketing SOP</div>
+      <div class="sop-desc">Content creation workflow, social media posting standards, campaign planning, email marketing, and brand review process.</div>
+      <div class="sop-owner">Owner: Jicelle Bueno (Marketing Manager)</div>
+    </div>
+    <a class="sop-btn" href="https://www.notion.so/Marketing-SOP-31358090ef4280169965caf6ef88378f" target="_blank">Open in Notion ↗</a>
+  </div>
+
+  <div class="sop-card">
+    <div class="sop-info">
+      <div class="sop-name">📈 Dashboards & Visual Guide</div>
+      <div class="sop-desc">Standards for building client dashboards and data visualizations in Canva and Power BI. Covers layout, color, and chart type guidance.</div>
+      <div class="sop-owner">Owner: Rachelle Cenina (Client Delivery Manager)</div>
+    </div>
+    <a class="sop-btn" href="https://www.notion.so/Dashboards-Visual-Guide-31458090ef42806cadddd2cc9bc0c800" target="_blank">Open in Notion ↗</a>
+  </div>
+
+  <div class="info-box"><p>All SOPs are maintained in Notion. If a process changes, update the SOP the same day. Do not let documentation fall behind the actual work.</p></div>
+</div>
+
+<!-- Individual SOP pages -->
+<div id="sop-email" class="page">
+  <div class="page-tag">SOPs</div>
+  <div class="tool-hero"><div class="tool-icon" style="background:#efebbf;font-size:22px">📧</div><div><div class="tool-hero-name">Email Template SOP</div><div class="tool-hero-desc">Templates and standards for all outgoing PFA emails</div></div></div>
+  <div class="tool-section"><div class="tool-section-title">What this SOP covers</div><ul class="styled"><li>Standard email templates for client communication</li><li>Templates for follow-ups after discovery calls and meetings</li><li>Internal email standards and response time expectations</li><li>Subject line conventions and tone guidelines</li><li>When to use email vs. ClickUp vs. direct message</li></ul></div>
+  <div class="tool-section"><div class="tool-section-title">Owner</div><p style="margin:0;font-size:11px;color:#56787c">Jicelle Bueno — Marketing Manager. Changes to email templates must be approved by Jicelle before use.</p></div>
+  <a class="sop-btn" href="https://www.notion.so/Email-Template-SOP-1ce58090ef4280bab715c9827f0aace5" target="_blank" style="display:inline-flex;margin-top:8px">Open full SOP in Notion ↗</a>
+</div>
+
+<div id="sop-speaking" class="page">
+  <div class="page-tag">SOPs</div>
+  <div class="tool-hero"><div class="tool-icon" style="background:#f0fcfa;font-size:22px">🎤</div><div><div class="tool-hero-name">Speaking Engagements SOP</div><div class="tool-hero-desc">Virtual and in-person speaking — booking to post-event</div></div></div>
+  <div class="tool-section"><div class="tool-section-title">What this SOP covers</div><ul class="styled"><li>Intake process for new speaking requests</li><li>Confirmation and logistics checklist (virtual and in-person)</li><li>Slide deck selection and customization guidance</li><li>Pre-event communication with event organizers</li><li>Day-of setup and Zoom/tech requirements</li><li>Post-event follow-up and lead capture</li></ul></div>
+  <div class="tool-section"><div class="tool-section-title">Owner</div><p style="margin:0;font-size:11px;color:#56787c">Dr. Michael Tatonetti and Christen Pruitt. Christen manages logistics; Dr. Michael manages content.</p></div>
+  <a class="sop-btn" href="https://www.notion.so/Speaking-Engagements-Virtual-In-Person-Standard-Operating-Procedures-30d58090ef428063b23dc7e6bc68a52c" target="_blank" style="display:inline-flex;margin-top:8px">Open full SOP in Notion ↗</a>
+</div>
+
+<div id="sop-consulting" class="page">
+  <div class="page-tag">SOPs</div>
+  <div class="tool-hero"><div class="tool-icon" style="background:#efebbf;font-size:22px">📋</div><div><div class="tool-hero-name">Consulting Roadmap SOP</div><div class="tool-hero-desc">The definitive guide for running every client engagement</div></div></div>
+  <div class="tool-section"><div class="tool-section-title">What this SOP covers</div><ul class="styled"><li>Phase 1 data collection checklist and meeting templates</li><li>Phase 2 research design and listening tour protocols</li><li>Phase 3 roadmap build process and internal review steps</li><li>Client communication standards at each phase</li><li>Escalation procedures and scope change management</li><li>Closeout and offboarding checklist</li></ul></div>
+  <div class="tool-section"><div class="tool-section-title">Owner</div><p style="margin:0;font-size:11px;color:#56787c">Rolan Reynacido (analytics phases) and Rachelle Cenina (client delivery phases).</p></div>
+  <a class="sop-btn" href="https://www.notion.so/Consulting-Roadmap-SOP-2f558090ef428082babaed90af003f6c" target="_blank" style="display:inline-flex;margin-top:8px">Open full SOP in Notion ↗</a>
+</div>
+
+<div id="sop-survey" class="page">
+  <div class="page-tag">SOPs</div>
+  <div class="tool-hero"><div class="tool-icon" style="background:#f0fcfa;font-size:22px">📊</div><div><div class="tool-hero-name">Survey Creation SOP</div><div class="tool-hero-desc">SurveyMonkey and Conjointly — design, deploy, export</div></div></div>
+  <div class="tool-section"><div class="tool-section-title">What this SOP covers</div><ul class="styled"><li>When to use SurveyMonkey vs. Conjointly</li><li>Approved question bank and question writing standards</li><li>Survey logic and skip patterns</li><li>Internal testing protocol before deployment</li><li>How to distribute surveys to client audiences</li><li>Data export, cleaning, and storage standards</li></ul></div>
+  <div class="tool-section"><div class="tool-section-title">Owner</div><p style="margin:0;font-size:11px;color:#56787c">Rolan Reynacido — Director of Pricing Analytics. All new surveys require Rolan's sign-off before deployment.</p></div>
+  <a class="sop-btn" href="https://www.notion.so/Survey-Creation-SOP-30758090ef42803aa8a1cb1907af7d7b" target="_blank" style="display:inline-flex;margin-top:8px">Open full SOP in Notion ↗</a>
+</div>
+
+<div id="sop-marketing" class="page">
+  <div class="page-tag">SOPs</div>
+  <div class="tool-hero"><div class="tool-icon" style="background:#f1eae2;font-size:22px">📣</div><div><div class="tool-hero-name">Marketing SOP</div><div class="tool-hero-desc">Content creation, social media, campaigns, and brand review</div></div></div>
+  <div class="tool-section"><div class="tool-section-title">What this SOP covers</div><ul class="styled"><li>Content creation workflow from brief to publish</li><li>Social media posting schedule and approval process</li><li>Email marketing process using FloDesk</li><li>Campaign planning and brief template</li><li>Brand review checklist before any content goes live</li><li>Blog post publishing workflow in Squarespace</li></ul></div>
+  <div class="tool-section"><div class="tool-section-title">Owner</div><p style="margin:0;font-size:11px;color:#56787c">Jicelle Bueno — Marketing Manager. All content must pass the brand review process before publishing.</p></div>
+  <a class="sop-btn" href="https://www.notion.so/Marketing-SOP-31358090ef4280169965caf6ef88378f" target="_blank" style="display:inline-flex;margin-top:8px">Open full SOP in Notion ↗</a>
+</div>
+
+<div id="sop-dashboard" class="page">
+  <div class="page-tag">SOPs</div>
+  <div class="tool-hero"><div class="tool-icon" style="background:#efebbf;font-size:22px">📈</div><div><div class="tool-hero-name">Dashboards & Visual Guide</div><div class="tool-hero-desc">Standards for all client dashboards and data visualizations</div></div></div>
+  <div class="tool-section"><div class="tool-section-title">What this SOP covers</div><ul class="styled"><li>When to use Canva vs. Power BI vs. Google Sheets for visuals</li><li>Color and font standards for all data visualizations</li><li>Chart type selection guide (when to use bar, line, pie, etc.)</li><li>Dashboard layout templates and naming conventions</li><li>Quality review checklist before sending to clients</li><li>File naming and storage standards</li></ul></div>
+  <div class="tool-section"><div class="tool-section-title">Owner</div><p style="margin:0;font-size:11px;color:#56787c">Rachelle Cenina — Client Delivery Manager. All client-facing dashboards must be reviewed by Rachelle before delivery.</p></div>
+  <a class="sop-btn" href="https://www.notion.so/Dashboards-Visual-Guide-31458090ef42806cadddd2cc9bc0c800" target="_blank" style="display:inline-flex;margin-top:8px">Open full SOP in Notion ↗</a>
+</div>
+
+<!-- ============ HR & PTO ============ -->
+<div id="pto" class="page">
+  <div class="page-tag">HR & PTO</div>
+  <h1>PTO Overview & Policy</h1>
+  <p class="page-intro">Everything you need to know about requesting, tracking, and understanding your paid time off at PFA.</p>
+
+  <h2>Quick links</h2>
+  <div class="quick-links">
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/fm/27tv4-29637" target="_blank"><div class="quick-link-icon">📋</div><div><div class="quick-link-name">PTO Request Form</div><div class="quick-link-sub">Submit in ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://docs.google.com/spreadsheets/d/1ClztXYlFWUF96-YILD4e1YLhMqTHjPQifDpoHNGRd-Y/edit?gid=2139394804#gid=2139394804" target="_blank"><div class="quick-link-icon">📊</div><div><div class="quick-link-name">PTO Report 2026</div><div class="quick-link-sub">Google Sheets</div></div></a>
+  </div>
+
+  <h2>PTO types & allotments</h2>
+  <table>
+    <thead><tr><th>PTO Type</th><th>Standard</th><th>Senior / Management</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Birthday Leave</td><td>1 day</td><td>1 day</td><td>Used on or near your birthday</td></tr>
+      <tr><td>Vacation Leave</td><td>3–5 days</td><td>6–9 days</td><td>Based on role and tenure</td></tr>
+      <tr><td>Sick Leave</td><td>3–5 days</td><td>5 days</td><td>Emergency / health use</td></tr>
+      <tr><td>Others</td><td>5 days</td><td>5 days</td><td>Bereavement, family events, etc.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>How to request PTO</h2>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Submit via ClickUp form</div><div class="step-desc">Go to the <a href="https://app.clickup.com/2352996/v/fm/27tv4-29637" target="_blank" style="color:#0f6e56">PTO Request Form</a>. Fill in your name, role, PTO type, date, and any notes.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Give the right notice</div><div class="step-desc">Vacation leave: at least 1 week in advance. Emergency / sick leave: at least 2 hours before your shift, whenever possible.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Wait for approval</div><div class="step-desc">Your direct supervisor reviews and approves. You will see the status update in ClickUp.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Confirm and plan handoff</div><div class="step-desc">Once approved, inform your team of any tasks that need coverage during your absence.</div></div></div>
+
+  <h2>PTO rules to know</h2>
+  <ul class="styled">
+    <li>PTO does not carry over to the next calendar year unless explicitly approved by Meldee</li>
+    <li>Birthday leave must be used within the birthday month</li>
+    <li>Uninformed absences without an approved PTO request are a conduct violation</li>
+    <li>PTO balances are tracked in the Google Sheets PTO Report — check yours before requesting</li>
+    <li>Questions about your balance? Contact Meldee directly</li>
+  </ul>
+</div>
+
+<!-- PTO TRACKER -->
+<div id="pto-tracker" class="page">
+  <div class="page-tag">HR & PTO</div>
+  <h1>PTO Tracker 2026</h1>
+  <p class="page-intro">Current PTO balances for all team members as of the last update. For the live version, open the Google Sheets report.</p>
+
+  <div class="pto-header">
+    <div style="font-size:11px;color:#56787c">Data sourced from PTO Report 2026. Updated periodically.</div>
+    <a class="pto-link-btn" href="https://docs.google.com/spreadsheets/d/1ClztXYlFWUF96-YILD4e1YLhMqTHjPQifDpoHNGRd-Y/edit?gid=2139394804#gid=2139394804" target="_blank">Open live report ↗</a>
+  </div>
+
+  <h2>2026 remaining balances</h2>
+  <table class="pto-table">
+    <thead><tr><th>Name</th><th>Role</th><th>Birthday</th><th>Vacation</th><th>Sick</th><th>Others</th><th>Total</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Meldee Reynacido</strong></td><td style="font-size:10px">DOO</td><td class="pto-ok">1</td><td class="pto-ok">8</td><td class="pto-ok">4</td><td class="pto-ok">5</td><td><strong>13</strong></td></tr>
+      <tr><td><strong>Rolan Reynacido</strong></td><td style="font-size:10px">DPA</td><td class="pto-ok">1</td><td class="pto-ok">5</td><td class="pto-ok">5</td><td class="pto-ok">5</td><td><strong>11</strong></td></tr>
+      <tr><td><strong>Rachelle Cenina</strong></td><td style="font-size:10px">CDM</td><td class="pto-ok">1</td><td class="pto-ok">5</td><td class="pto-ok">5</td><td class="pto-ok">4</td><td><strong>11</strong></td></tr>
+      <tr><td><strong>Jicelle Bueno</strong></td><td style="font-size:10px">MM</td><td class="pto-ok">1</td><td class="pto-ok">1</td><td class="pto-ok">5</td><td class="pto-ok">5</td><td><strong>7</strong></td></tr>
+      <tr><td><strong>Jean Patrick Marquez</strong></td><td style="font-size:10px">SPA</td><td class="pto-ok">1</td><td class="pto-ok">5</td><td class="pto-ok">5</td><td class="pto-ok">5</td><td><strong>11</strong></td></tr>
+      <tr><td><strong>Rita Reynacido</strong></td><td style="font-size:10px">JPA</td><td class="pto-ok">1</td><td class="pto-ok">3</td><td class="pto-ok">3</td><td class="pto-ok">5</td><td><strong>7</strong></td></tr>
+      <tr><td><strong>Benjamin Paterno</strong></td><td style="font-size:10px">JPA</td><td class="pto-neg">-2</td><td class="pto-ok">3</td><td class="pto-ok">5</td><td class="pto-ok">0</td><td class="pto-warn"><strong>1</strong></td></tr>
+      <tr><td><strong>Chiarra Marie Eva</strong></td><td style="font-size:10px">JPA</td><td class="pto-ok">1</td><td class="pto-ok">3</td><td class="pto-ok">3</td><td class="pto-ok">5</td><td><strong>7</strong></td></tr>
+      <tr><td><strong>Dr. Michael Tatonetti</strong></td><td style="font-size:10px">CEO</td><td style="color:#aaa">—</td><td style="color:#aaa">—</td><td style="color:#aaa">—</td><td style="color:#aaa">—</td><td style="color:#aaa">—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn-box"><p>Benjamin Paterno has a negative birthday leave balance (-2). This will need to be resolved with Meldee before any further PTO requests are approved.</p></div>
+
+  <h2>2026 upcoming approved PTO</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Type</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Jean Patrick Marquez</td><td>Birthday</td><td>April 14, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Jicelle Bueno</td><td>Vacation (4 days)</td><td>May 12, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Benjamin Paterno</td><td>Vacation (3 days)</td><td>May 13, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Benjamin Paterno</td><td>Vacation (2 days)</td><td>June 18, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Jicelle Bueno</td><td>Birthday</td><td>July 3, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Rita Reynacido</td><td>Birthday</td><td>August 1, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Meldee Reynacido</td><td>Birthday</td><td>September 14, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Rachelle Cenina</td><td>Birthday</td><td>October 5, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+      <tr><td>Rolan Reynacido</td><td>Birthday</td><td>November 30, 2026</td><td><span class="badge badge-green">Approved</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box"><p>This table reflects data from the PTO Report spreadsheet. For the most current balances and full history, always open the live Google Sheets report.</p></div>
+</div>
+
+<!-- PAYROLL -->
+<div id="payroll" class="page">
+  <div class="page-tag">HR & PTO</div>
+  <h1>Payroll</h1>
+  <p class="page-intro">How and when the team gets paid. For payroll records and history, all links are below.</p>
+
+  <div class="grid-2">
+    <div class="stat-card"><div class="stat-label">Pay frequency</div><div class="stat-val">Weekly</div></div>
+    <div class="stat-card"><div class="stat-label">Pay day</div><div class="stat-val">Every Friday</div></div>
+    <div class="stat-card"><div class="stat-label">Payment method</div><div class="stat-val">Wise</div></div>
+    <div class="stat-card"><div class="stat-label">Payroll admin</div><div class="stat-val" style="font-size:12px">Meldee Reynacido</div></div>
+  </div>
+
+  <h2>Quick links</h2>
+  <div class="quick-links">
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/f/90172031798/90170969917" target="_blank"><div class="quick-link-icon">💰</div><div><div class="quick-link-name">Weekly Payroll</div><div class="quick-link-sub">ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/dc/27tv4-16317" target="_blank"><div class="quick-link-icon">📄</div><div><div class="quick-link-name">Meldee — Payroll</div><div class="quick-link-sub">ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/dc/27tv4-16337" target="_blank"><div class="quick-link-icon">📄</div><div><div class="quick-link-name">Rolan — Payroll</div><div class="quick-link-sub">ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/dc/27tv4-16377" target="_blank"><div class="quick-link-icon">📄</div><div><div class="quick-link-name">Rachelle — Payroll</div><div class="quick-link-sub">ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/dc/27tv4-25097" target="_blank"><div class="quick-link-icon">📄</div><div><div class="quick-link-name">Jean Patrick — Payroll</div><div class="quick-link-sub">ClickUp</div></div></a>
+    <a class="quick-link-card" href="https://app.clickup.com/2352996/v/dc/27tv4-25077" target="_blank"><div class="quick-link-icon">📄</div><div><div class="quick-link-name">Jicelle — Payroll</div><div class="quick-link-sub">ClickUp</div></div></a>
+  </div>
+
+  <h2>Payroll questions</h2>
+  <p>For any payroll discrepancy, question about your rate, or payment issue — contact Meldee directly at <a href="mailto:meldee@pricingforassociations.com" style="color:#0f6e56">meldee@pricingforassociations.com</a>. Do not discuss payroll matters in team channels or ClickUp task comments.</p>
+  <div class="info-box"><p>Annual performance appraisals are the only time salary adjustments are made, unless otherwise communicated by Dr. Michael.</p></div>
+</div>
+
+<!-- BRAND -->
+<div id="brand" class="page"><div class="page-tag">Brand Assets</div><h1>Brand Kit</h1><p class="page-intro">Use PFA's visual identity consistently across every touchpoint.</p><h2>Brand colors</h2><div class="card"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><div style="text-align:center"><div class="color-swatch" style="background:#1f375b"></div><div style="font-size:9px;color:#56787c">#1f375b<br>Navy</div></div><div style="text-align:center"><div class="color-swatch" style="background:#56787c"></div><div style="font-size:9px;color:#56787c">#56787c<br>Teal Dark</div></div><div style="text-align:center"><div class="color-swatch" style="background:#94e5d6"></div><div style="font-size:9px;color:#56787c">#94e5d6<br>Teal Light</div></div><div style="text-align:center"><div class="color-swatch" style="background:#efebbf"></div><div style="font-size:9px;color:#56787c">#efebbf<br>Gold</div></div><div style="text-align:center"><div class="color-swatch" style="background:#f1eae2"></div><div style="font-size:9px;color:#56787c">#f1eae2<br>Warm White</div></div><div style="text-align:center"><div class="color-swatch" style="background:#000"></div><div style="font-size:9px;color:#56787c">#000000<br>Black</div></div></div></div><h2>Fonts</h2><div class="card"><div class="card-body">Primary: <strong>Varela Round</strong>. Secondary: <strong>Montserrat</strong>.</div></div><h2>Logo variations</h2><ul class="styled"><li>Teal circle icon with double-A mark (primary)</li><li>Navy double-A mark standalone</li><li>Horizontal wordmark — teal or navy icon</li></ul><div class="info-box"><p>All brand assets managed by Jicelle. Run everything through brand review before publishing.</p></div></div>
+
+<div id="email-sig" class="page"><div class="page-tag">Brand Assets</div><h1>Email Signature & OOO</h1><p class="page-intro">Set up on your first day.</p><h2>Signature format</h2><div class="card"><div style="font-size:11px;color:#56787c;margin-bottom:7px">Delivering Value,</div><div style="font-size:12px;font-weight:700;color:#1f375b">[Your Name], [Credentials]</div><div style="font-size:11px;color:#56787c">[Your Title]<br>Pricing for Associations</div><div style="margin-top:7px;padding-top:7px;border-top:1px solid rgba(31,55,91,0.1);font-size:10px;color:#56787c">[your@pricingforassociations.com] | www.pricingforassociations.com</div></div><h2>Holiday OOO template</h2><div class="ooo-box"><strong>OOO Template</strong><br><br>Hello!<br><br>The Pricing for Associations offices are closed <em>[Start Date – End Date]</em> for the holidays, and then our team will be out of office <em>[Start Date – End Date]</em> for our annual retreat.<br><br>We return Monday, <em>[Date]</em> and will reply to all emails at that time.<br><br>If you are a current client, we will monitor priority emails the week of <em>[Date]</em>.</div></div>
+
+<div id="decks" class="page"><div class="page-tag">Brand Assets</div><h1>Decks & Templates</h1><p class="page-intro">All templates are in the shared Google Drive. Always use the branded version.</p><h2>Client meeting PPT templates</h2><ul class="styled"><li>Kick-Off Meeting</li><li>Data Analysis Meeting</li><li>Value Analysis Meeting</li><li>Final Roadmap Meeting</li></ul><h2>Sales & speaking decks</h2><ul class="styled"><li>Sales Deck</li><li>Why Now Is the Time to Change Your Pricing Strategy</li><li>Pricing with Purpose: Designing Smarter Surveys</li><li>Ten Pricing Psychology Hacks (Starbucks Method)</li><li>5 Steps to Value Propositions That Sell</li><li>Effectively Communicating Price Increases and Changes</li><li>Where Is the Value? — Using High-Low</li><li>The Impact of Pricing Decisions — Pricing Simulator</li><li>Nonprofit vs. No Profit: Debunking Profit Myths</li></ul><div class="info-box"><p>Never share editable versions externally. Always export to PDF before sending to clients.</p></div></div>
+
+<!-- TOOLS INDEX -->
+<div id="tools-index" class="page">
+  <div class="page-tag">Tools</div><h1>Tools Overview</h1>
+  <p class="page-intro">14 tools. Click any tile to go to its full guide.</p>
+  <div class="tools-index">
+    <div class="tool-index-card" onclick="show('tool-clickup',qn('tool-clickup'))"><div class="tool-index-icon">📝</div><div class="tool-index-name">ClickUp</div></div>
+    <div class="tool-index-card" onclick="show('tool-squarespace',qn('tool-squarespace'))"><div class="tool-index-icon">🌐</div><div class="tool-index-name">Squarespace</div></div>
+    <div class="tool-index-card" onclick="show('tool-flodesk',qn('tool-flodesk'))"><div class="tool-index-icon">✉️</div><div class="tool-index-name">FloDesk</div></div>
+    <div class="tool-index-card" onclick="show('tool-zoom',qn('tool-zoom'))"><div class="tool-index-icon">🎥</div><div class="tool-index-name">Zoom</div></div>
+    <div class="tool-index-card" onclick="show('tool-linkedin',qn('tool-linkedin'))"><div class="tool-index-icon">💼</div><div class="tool-index-name">LinkedIn</div></div>
+    <div class="tool-index-card" onclick="show('tool-otter',qn('tool-otter'))"><div class="tool-index-icon">📝</div><div class="tool-index-name">Otter</div></div>
+    <div class="tool-index-card" onclick="show('tool-surveymonkey',qn('tool-surveymonkey'))"><div class="tool-index-icon">📊</div><div class="tool-index-name">SurveyMonkey</div></div>
+    <div class="tool-index-card" onclick="show('tool-canva',qn('tool-canva'))"><div class="tool-index-icon">🎨</div><div class="tool-index-name">Canva</div></div>
+    <div class="tool-index-card" onclick="show('tool-email',qn('tool-email'))"><div class="tool-index-icon">📧</div><div class="tool-index-name">Company Email</div></div>
+    <div class="tool-index-card" onclick="show('tool-honeybook',qn('tool-honeybook'))"><div class="tool-index-icon">📒</div><div class="tool-index-name">HoneyBook</div></div>
+    <div class="tool-index-card" onclick="show('tool-chatgpt',qn('tool-chatgpt'))"><div class="tool-index-icon">🤖</div><div class="tool-index-name">ChatGPT</div></div>
+    <div class="tool-index-card" onclick="show('tool-claude',qn('tool-claude'))"><div class="tool-index-icon">🤖</div><div class="tool-index-name">Claude</div></div>
+    <div class="tool-index-card" onclick="show('tool-conjointly',qn('tool-conjointly'))"><div class="tool-index-icon">📊</div><div class="tool-index-name">Conjointly</div></div>
+    <div class="tool-index-card" onclick="show('tool-notion',qn('tool-notion'))"><div class="tool-index-icon">📒</div><div class="tool-index-name">Notion</div></div>
+  </div>
+  <div class="info-box"><p>For access to any tool, contact Meldee. All credentials are managed through operations.</p></div>
+</div>
+
+<!-- TOOL PAGES (condensed but complete) -->
+<div id="tool-clickup" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#efebbf;font-size:20px">📝</div><div><div class="tool-hero-name">ClickUp</div><div class="tool-hero-desc">Communication & task management — the primary project hub</div></div></div><div class="tool-section"><div class="tool-section-title">Overview</div><p style="margin:0;font-size:11px;color:#56787c">ClickUp is the central nervous system of PFA's operations. All tasks, projects, timelines, payroll records, and team communication live here. Check ClickUp daily and keep tasks updated in real time.</p></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://app.clickup.com/2352996" target="_blank">app.clickup.com/2352996</a></div></div><div class="access-row"><div class="access-label">PTO Form</div><div class="access-val"><a href="https://app.clickup.com/2352996/v/fm/27tv4-29637" target="_blank">Submit PTO request</a></div></div><div class="access-row"><div class="access-label">Payroll</div><div class="access-val"><a href="https://app.clickup.com/2352996/v/f/90172031798/90170969917" target="_blank">Weekly payroll folder</a></div></div></div><div class="tool-section"><div class="tool-section-title">How to use</div><div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Check assigned tasks daily</div><div class="step-desc">Start every workday in your ClickUp inbox.</div></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Update task statuses</div><div class="step-desc">Move tasks: To Do → In Progress → Done. Never leave a started task untouched.</div></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Use comments, not DMs</div><div class="step-desc">Keep task communication in ClickUp comments so context stays with the work.</div></div></div></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use ClickUp for</div><ul><li>All task creation and assignment</li><li>Project timelines</li><li>Task communication</li><li>PTO requests</li><li>Payroll records</li></ul></div><div class="dont-box"><div class="label">Don't use for</div><ul><li>Urgent messages (use email)</li><li>File storage (use Drive)</li><li>Client communication</li></ul></div></div></div></div>
+
+<div id="tool-squarespace" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f1eae2;font-size:20px">🌐</div><div><div class="tool-hero-name">Squarespace</div><div class="tool-hero-desc">PFA's website — pricingforassociations.com</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://www.pricingforassociations.com" target="_blank">pricingforassociations.com</a></div></div><div class="access-row"><div class="access-label">Admin</div><div class="access-val">Contact Jicelle for credentials</div></div></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use for</div><ul><li>Publishing approved blog posts</li><li>Updating service pages</li><li>Adding case studies</li></ul></div><div class="dont-box"><div class="label">Don't use for</div><ul><li>Unapproved live edits</li><li>Unreviewed image uploads</li></ul></div></div></div></div>
+
+<div id="tool-flodesk" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f0fcfa;font-size:20px">✉️</div><div><div class="tool-hero-name">FloDesk</div><div class="tool-hero-desc">Email marketing — newsletters and campaigns</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://flodesk.com" target="_blank">flodesk.com</a></div></div><div class="access-row"><div class="access-label">Owner</div><div class="access-val">Jicelle Bueno (Marketing Manager)</div></div></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use for</div><ul><li>Monthly newsletters</li><li>Lead nurture sequences</li><li>Announcement emails</li></ul></div><div class="dont-box"><div class="label">Don't use for</div><ul><li>One-to-one client emails (use Gmail)</li><li>Unapproved list sends</li></ul></div></div></div></div>
+
+<div id="tool-zoom" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#e8f4fd;font-size:20px">🎥</div><div><div class="tool-hero-name">Zoom</div><div class="tool-hero-desc">All team and client video meetings</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://zoom.us" target="_blank">zoom.us</a></div></div></div><div class="tool-section"><div class="tool-section-title">How to use</div><div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Set your PFA Zoom background</div><div class="step-desc">Download from Google Drive. Set in Zoom Settings → Background & Filters.</div></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Display name</div><div class="step-desc">Use "[Your Name] | PFA" format.</div></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Recording consent</div><div class="step-desc">Client calls recorded only with consent. Use Otter for transcription.</div></div></div></div></div>
+
+<div id="tool-linkedin" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#e8f0f8;font-size:20px">💼</div><div><div class="tool-hero-name">LinkedIn</div><div class="tool-hero-desc">Social media for promotions and thought leadership</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">Company page</div><div class="access-val"><a href="https://www.linkedin.com/company/pricing-for-associations" target="_blank">Pricing for Associations</a></div></div><div class="access-row"><div class="access-label">Page admin</div><div class="access-val">Jicelle Bueno</div></div></div><div class="tool-section"><div class="tool-section-title">Setup checklist</div><ul class="styled"><li>Add PFA as your current employer</li><li>Use the PFA LinkedIn banner (updated December 2025)</li><li>Engage with company page posts regularly</li></ul></div><div class="warn-box"><p>Never post on behalf of the PFA company page without Jicelle's approval.</p></div></div>
+
+<div id="tool-otter" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f0fcfa;font-size:20px">📝</div><div><div class="tool-hero-name">Otter</div><div class="tool-hero-desc">AI-powered meeting transcription</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://otter.ai" target="_blank">otter.ai</a></div></div><div class="access-row"><div class="access-label">Login</div><div class="access-val">Contact Meldee for access</div></div></div><div class="tool-section"><div class="tool-section-title">How to use</div><ul class="styled"><li>Connect Otter to your Zoom account in settings</li><li>Review and clean transcript after each call</li><li>Client transcripts are internal only unless client requests a copy</li></ul></div><div class="warn-box"><p>Always inform participants at the start of a call that the meeting is being transcribed.</p></div></div>
+
+<div id="tool-surveymonkey" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#fff8e6;font-size:20px">📊</div><div><div class="tool-hero-name">SurveyMonkey</div><div class="tool-hero-desc">Survey creation and deployment for Phase 2 research</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://surveymonkey.com" target="_blank">surveymonkey.com</a></div></div><div class="access-row"><div class="access-label">Owner</div><div class="access-val">Rolan Reynacido</div></div></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use SurveyMonkey for</div><ul><li>General member surveys</li><li>Value-driver surveys</li><li>Demographic data</li></ul></div><div class="dont-box"><div class="label">Use Conjointly instead for</div><ul><li>Price sensitivity studies</li><li>Conjoint analysis</li><li>Max-diff</li></ul></div></div></div><p style="font-size:11px;color:#56787c">See also: <a href="#" onclick="show('sop-survey',qn('sop-survey'));return false;" style="color:#0f6e56">Survey Creation SOP ↗</a></p></div>
+
+<div id="tool-canva" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f0fcfa;font-size:20px">🎨</div><div><div class="tool-hero-name">Canva</div><div class="tool-hero-desc">Reports, dashboards, and branded asset creation</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://canva.com" target="_blank">canva.com</a></div></div><div class="access-row"><div class="access-label">Owner</div><div class="access-val">Rachelle Cenina & Jicelle Bueno</div></div></div><div class="tool-section"><div class="tool-section-title">Rules</div><ul class="styled"><li>Always start from a PFA template — never from scratch</li><li>Use brand colors (#1f375b, #56787c, #94e5d6, #efebbf) only</li><li>Fonts: Varela Round and Montserrat only</li><li>Name files: "[Client] — [Document Type] — [Date]"</li></ul></div><p style="font-size:11px;color:#56787c">See also: <a href="#" onclick="show('sop-dashboard',qn('sop-dashboard'));return false;" style="color:#0f6e56">Dashboard & Visual Guide SOP ↗</a></p></div>
+
+<div id="tool-email" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#efebbf;font-size:20px">📧</div><div><div class="tool-hero-name">Company Email</div><div class="tool-hero-desc">Gmail via Google Workspace — @pricingforassociations.com</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://mail.google.com" target="_blank">mail.google.com</a></div></div><div class="access-row"><div class="access-label">Format</div><div class="access-val">[firstname]@pricingforassociations.com</div></div></div><div class="tool-section"><div class="tool-section-title">Rules</div><ul class="styled"><li>Set up your PFA email signature on day one</li><li>Never use personal email for PFA work</li><li>Set OOO auto-reply during holidays and January retreat</li></ul></div><p style="font-size:11px;color:#56787c">See also: <a href="#" onclick="show('sop-email',qn('sop-email'));return false;" style="color:#0f6e56">Email Template SOP ↗</a></p></div>
+
+<div id="tool-honeybook" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f1eae2;font-size:20px">📒</div><div><div class="tool-hero-name">HoneyBook</div><div class="tool-hero-desc">Client CRM, proposals, and contracts</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://honeybook.com" target="_blank">honeybook.com</a></div></div><div class="access-row"><div class="access-label">Owner</div><div class="access-val">Christen Pruitt</div></div></div><div class="tool-section"><div class="tool-section-title">Pipeline stages</div><ul class="styled"><li>Inquiry → Proposal Sent → Contract Signed → Active Client</li><li>All new prospects logged immediately after first contact</li><li>All proposals reviewed by Dr. Michael before sending</li></ul></div></div>
+
+<div id="tool-chatgpt" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f0fcfa;font-size:20px">🤖</div><div><div class="tool-hero-name">ChatGPT</div><div class="tool-hero-desc">AI-assisted report generation and writing support</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://chat.openai.com" target="_blank">chat.openai.com</a></div></div></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use for</div><ul><li>First drafts and summaries</li><li>Rephrasing and proofreading</li><li>Research starting points</li></ul></div><div class="dont-box"><div class="label">Never</div><ul><li>Paste client data</li><li>Send output without review</li><li>Replace analyst judgment</li></ul></div></div></div><div class="warn-box"><p>Never paste client names, survey data, or confidential information into ChatGPT.</p></div></div>
+
+<div id="tool-claude" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#efebbf;font-size:20px">🤖</div><div><div class="tool-hero-name">Claude</div><div class="tool-hero-desc">AI assistant by Anthropic — writing, analysis, and research</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://claude.ai" target="_blank">claude.ai</a></div></div></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use for</div><ul><li>Long-form reports and documents</li><li>Meeting summaries</li><li>Writing SOPs and wiki content</li></ul></div><div class="dont-box"><div class="label">Never</div><ul><li>Paste confidential client data</li><li>Send output without human review</li></ul></div></div></div><div class="warn-box"><p>Same data rules as ChatGPT. Never input client names or proprietary information.</p></div></div>
+
+<div id="tool-conjointly" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f0fcfa;font-size:20px">📊</div><div><div class="tool-hero-name">Conjointly</div><div class="tool-hero-desc">Advanced pricing research — conjoint and price sensitivity</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://conjointly.com" target="_blank">conjointly.com</a></div></div><div class="access-row"><div class="access-label">Owner</div><div class="access-val">Rolan Reynacido</div></div></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use Conjointly for</div><ul><li>Van Westendorp price sensitivity</li><li>Conjoint analysis</li><li>Max-diff studies</li></ul></div><div class="dont-box"><div class="label">Use SurveyMonkey instead for</div><ul><li>General satisfaction surveys</li><li>Open-ended qualitative</li></ul></div></div></div><div class="warn-box"><p>All Conjointly studies require Rolan's sign-off before deployment.</p></div></div>
+
+<div id="tool-notion" class="page"><div class="page-tag">Tools</div><div class="tool-hero"><div class="tool-icon" style="background:#f1eae2;font-size:20px">📒</div><div><div class="tool-hero-name">Notion</div><div class="tool-hero-desc">SOPs, wiki, and internal knowledge base</div></div></div><div class="tool-section"><div class="tool-section-title">Access</div><div class="access-row"><div class="access-label">URL</div><div class="access-val"><a href="https://notion.so" target="_blank">notion.so</a></div></div><div class="access-row"><div class="access-label">Owner</div><div class="access-val">Meldee Reynacido</div></div></div><div class="tool-section"><div class="tool-section-title">Rules</div><ul class="styled"><li>Check Notion before asking a colleague a process question</li><li>If you update a process, update the Notion page the same day</li><li>Link to existing pages — never duplicate content</li></ul></div><div class="tool-section"><div class="tool-section-title">When to use</div><div class="do-dont"><div class="do-box"><div class="label">Use Notion for</div><ul><li>Company wiki and SOPs</li><li>Onboarding materials</li><li>Policy documents</li></ul></div><div class="dont-box"><div class="label">Don't use for</div><ul><li>Task management (use ClickUp)</li><li>File storage (use Google Drive)</li></ul></div></div></div></div>
+
+<!-- POLICIES / BENEFITS / ONBOARDING / FAQs -->
+<div id="policies" class="page"><div class="page-tag">Operations</div><h1>Company Policies</h1><p class="page-intro">These apply to every team member.</p><div class="policy-card"><div class="policy-title">Work hours & location</div><div class="policy-body">Flexible. 10 hours per week for the Jr. Pricing Consultant role. Schedules confirmed at time of hire.</div></div><div class="policy-card"><div class="policy-title">Attendance & punctuality</div><div class="policy-body">Log in and out on time. Meeting attendance is mandatory unless PTO is approved in advance.</div></div><div class="policy-card"><div class="policy-title">Vacation leave</div><div class="policy-body">Give at least one (1) week notice. Subject to supervisor approval.</div></div><div class="policy-card"><div class="policy-title">Emergency / sick leave</div><div class="policy-body">Notify your supervisor at least two (2) hours in advance.</div></div><div class="policy-card"><div class="policy-title">Conduct standards</div><div class="policy-body">Uninformed absences, disrespect, or non-compliance may result in disciplinary action up to termination.</div></div><div class="policy-card"><div class="policy-title">Holiday closure</div><div class="policy-body">Two-week break at year-end. One-week Company Retreat in January. OOO auto-replies required.</div></div></div>
+
+<div id="benefits" class="page"><div class="page-tag">Operations</div><h1>Benefits & Perks</h1><p class="page-intro">What PFA offers its team members.</p><div class="grid-2"><div class="stat-card"><div class="stat-label">Salary</div><div class="stat-val" style="font-size:12px">Weekly — Fridays via Wise</div></div><div class="stat-card"><div class="stat-label">Retreat</div><div class="stat-val" style="font-size:12px">1 week every January</div></div><div class="stat-card"><div class="stat-label">Reviews</div><div class="stat-val" style="font-size:12px">Quarterly evaluations</div></div><div class="stat-card"><div class="stat-label">Appraisal</div><div class="stat-val" style="font-size:12px">Annual — performance-based</div></div></div></div>
+
+<div id="onboarding" class="page"><div class="page-tag">Operations</div><h1>New Employee Onboarding</h1><p class="page-intro">Everything a new team member needs. Last updated March 23, 2026.</p><h2>Onboarding agenda</h2><div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Company overview</div><div class="step-desc">Review Mission & Vision and Our Story pages of this wiki.</div></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Software & tools</div><div class="step-desc">Get access to all 14 tools. Contact Meldee. Start with ClickUp.</div></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">SOPs</div><div class="step-desc">Read the SOP relevant to your role. Ask Meldee which ones apply to you.</div></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Policies & benefits</div><div class="step-desc">Review the Company Policies and Benefits pages. Confirm your schedule and Wise payment details with Meldee.</div></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Brand assets</div><div class="step-desc">Set up email signature, Zoom background, and LinkedIn banner. All in shared Google Drive.</div></div></div><div class="divider"></div><h2>First-day checklist</h2><ul class="styled"><li>Attend onboarding call with Meldee</li><li>Watch Dr. Michael's Loom introduction</li><li>Get access to ClickUp, Gmail, Google Drive, Zoom</li><li>Set up PFA email signature</li><li>Download and set Zoom background</li><li>Update LinkedIn with PFA banner</li><li>Review this wiki in full</li><li>Read the SOPs relevant to your role</li><li>Confirm first tasks with your supervisor in ClickUp</li></ul><div class="info-box"><p>Questions? Go to Meldee first. Role-specific questions go to your direct supervisor.</p></div></div>
+
+<div id="faqs" class="page"><div class="page-tag">Operations</div><h1>FAQs</h1><p class="page-intro">Common questions. Add to this as new ones come up.</p><div class="card"><div class="card-title">How long does a consulting engagement take?</div><div class="card-body" style="margin-top:5px">Typically 6 to 10 months. Phase 1: 1–2 months. Phase 2: 3–5 months. Phase 3: 2–3 months.</div></div><div class="card" style="margin-top:7px"><div class="card-title">Can a client skip phases?</div><div class="card-body" style="margin-top:5px">No. Escalate to Dr. Michael if a client pushes back.</div></div><div class="card" style="margin-top:7px"><div class="card-title">When is salary paid?</div><div class="card-body" style="margin-top:5px">Every Friday via Wise. Contact Meldee for payroll questions.</div></div><div class="card" style="margin-top:7px"><div class="card-title">How do I request PTO?</div><div class="card-body" style="margin-top:5px">Submit the <a href="https://app.clickup.com/2352996/v/fm/27tv4-29637" target="_blank" style="color:#0f6e56">PTO form in ClickUp</a>. VL requires 1 week notice. Emergency leave requires 2 hours notice.</div></div><div class="card" style="margin-top:7px"><div class="card-title">Where are the SOPs?</div><div class="card-body" style="margin-top:5px">In the SOP Library section of this wiki, and linked directly to Notion. There are 6 SOPs covering Email, Speaking, Consulting, Survey Creation, Marketing, and Dashboards.</div></div><div class="card" style="margin-top:7px"><div class="card-title">Who do I go to for questions?</div><div class="card-body" style="margin-top:5px">Operations/HR → Meldee. Analytics/data → Rolan. Client delivery → Rachelle. Marketing/brand → Jicelle. Sales → Christen.</div></div><div style="margin-top:16px"><div class="info-box"><p>Have a question that should be here? Add it. This wiki only works if the team keeps it current.</p></div></div></div>
+
+</main>
+
+<script>
+function qn(id){return document.querySelector('[onclick*="\''+id+'\'"]')||document.querySelector('[onclick*="'+id+'"]');}
+function show(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));var pg=document.getElementById(id);if(pg)pg.classList.add('active');if(el&&el.classList)el.classList.add('active');document.querySelector('.main').scrollTop=0;}
+function toggleProfile(id,cardId){var box=document.getElementById('profile-'+id);var card=document.getElementById(cardId);if(!box)return;var isVisible=box.classList.contains('visible');document.querySelectorAll('.profile-box').forEach(b=>b.classList.remove('visible'));document.querySelectorAll('.team-card').forEach(c=>c.classList.remove('selected'));if(!isVisible){box.classList.add('visible');if(card)card.classList.add('selected');box.scrollIntoView({behavior:'smooth',block:'nearest'});}}
+function handleSearch(val){if(!val.trim())return;var pages=document.querySelectorAll('.page');var found=null;pages.forEach(p=>{if(!found&&p.textContent.toLowerCase().includes(val.toLowerCase())){found=p.id;}});if(found){var n=qn(found);show(found,n);}}
+</script>
